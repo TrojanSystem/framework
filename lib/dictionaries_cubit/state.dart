@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../word_response.dart';
 
 abstract class DictionariesCubitState {}
@@ -14,5 +16,7 @@ class WordSearchedState extends DictionariesCubitState {
 
 class ErrorState extends DictionariesCubitState {
   final String message;
-  ErrorState(this.message);
+  final IconData icon;
+  ErrorState(this.message,context,this.icon);
+
 }

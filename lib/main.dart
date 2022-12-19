@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       create: (context) => DictionariesCubit(WordRepository()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Flutter Bloc Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
@@ -38,28 +38,43 @@ class Dictionary extends StatelessWidget {
     return BlocListener(
       listener: (context, state) {
         if (state is WordSearchedState) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (ctx) => ListOfWords(word: state.word),
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (ctx) => ListOfWords(word: state.word),
+          ));
+        } else if (state is ErrorState) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(state.message),
+              content: Icon(state.icon),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Ok'),
+                )
+              ],
             ),
           );
         }
+        // else if(state is ErrorState){
+        //   ErrorState(cubit.state.toString(),context).errorState(context);
+        // }
       },
       bloc: cubit,
       child: Scaffold(
         backgroundColor: Colors.white38,
         body: cubit.state is WordSearchingState
             ? getLoadingWidget()
-            : cubit.state is ErrorState
-                ? getErrorWidget('message')
-                : cubit.state is NoWordSearchState
-                    ? getDictionaryFromWidget(cubit,context)
-                    : Container(),
+            : cubit.state is NoWordSearchState
+                ? getDictionaryFromWidget(cubit, context)
+                : Container(),
       ),
     );
   }
 
-  getDictionaryFromWidget(DictionariesCubit cubit,context) {
+  getDictionaryFromWidget(DictionariesCubit cubit, context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +132,12 @@ class Dictionary extends StatelessWidget {
 
   getErrorWidget(message) {
     return Center(
-      child: Text(message),
+      child: Text(
+        message,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }
